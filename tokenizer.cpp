@@ -34,6 +34,9 @@ enum class Direction { null, POS, NEG };
 class A
 {
 protected:
+	std::string letters = "abcdefghijklmnopqrstuvwxyz";
+	std::string numbers = "1234567890";
+
 	int x = 0, y = 0;
 	Actions act;
 	Axis ax;
@@ -65,12 +68,20 @@ struct B : public A
 {
 	B(int _x, int _y): A(_x, _y) {}
 
+	// Moving.
 	void update() override
 	{
 		std::string str = "";
 		std::cout << "Give me commands:\n";
 		std::getline(std::cin, str);
 		auto v1 = tokenize(str);
+
+		int i = 0, j = 0, f = v1.size(), steps = 0;
+		while(i < f)
+		{
+			while(v[i].size() >= 2) i++;
+		}
+		
 	}
 };
 
