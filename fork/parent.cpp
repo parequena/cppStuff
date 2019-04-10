@@ -3,55 +3,64 @@
 #include <cstring>
 #include <string>
 
-int main(){
-    int parent_to_child[2];
-    int child_to_parent[2];
+/*
+#define STDIN_FILENO    0       Standard input
+#define STDOUT_FILENO   1       Standard output
+#define STDERR_FILENO   2       Standard error output
+*/
 
-    pipe(parent_to_child);
-    pipe(child_to_parent);
+int main()
+{
+    int fd_P2C[2], fd_C2P[2];
 
-    int childPID = fork();
+    pipe(fd_P2C);
+    pipe(fd_C2P);
 
-    if(childPID == 0){
-        //this is child
-        close(parent_to_child[1]);//Close the writing end of the incoming pipe
-        close(child_to_parent[0]);//Close the reading end of the outgoing pipe
+    int pid = fork();
 
-        dup2(parent_to_child[0], STDIN_FILENO);//replace stdin with incoming pipe
-        dup2(child_to_parent[1], STDOUT_FILENO);//replace stdout with outgoing pipe
+    if(pid == 0)
+    {
+        // Hijo
+        close(fd_P2C[STDOUT_FILENO]); // Cerramos la escritura del pipe de recepcion.
+        close(fd_C2P[STDIN_FILENO]);  // Cerramos la lectura del pipe de envio.
 
-        //exec child process
-        char filename[] = "child.out";
-        char *newargv[] = { NULL };
-        char *newenviron[] = { NULL };
-        execve(filename, newargv, newenviron);
-    }else{
-        //this is parent
-        close(parent_to_child[0]);//Close the reading end of the outgoing pipe.
-        close(child_to_parent[1]);//Close the writing side of the incoming pipe.
+        dup2(fd_P2C[STDIN_FILENO], STDIN_FILENO);   // Remplazamos std::cin por el pipe de recepcion.
+        dup2(fd_C2P[STDOUT_FILENO], STDOUT_FILENO); // Remplazamos std::cout por el pipe de salida.
 
-        int parent_frame = 0;
-        char str_to_write[100];
+        // Ejecutamos el codigo hijo.
+        // char *newargv[] = { NULL };
+        execve("child", nullptr, NULL);
+    }
+    else
+    {
+        // Padre
+        close(fd_P2C[STDIN_FILENO]);  // Cerramos la lectura del pipe de envio.
+        close(fd_C2P[STDOUT_FILENO]); // Cerramos la escritura del pipe de recepcion.
 
         char reading_buffer;
-        std::string received_str;
+        std::string received_str = "", toWrite = "HOLA HIJO";
 
-        do{
+        dup2(fd_C2P[STDIN_FILENO], STDIN_FILENO); // Remplazamos std::cin al pipe de recepcion.
+        write(fd_P2C[STDOUT_FILENO], toWrite.c_str(), toWrite.length()); // Escribimos el string.
+        std::getline(std::cin, received_str); // Leemos el string desde el pipe.
+
+        std::cout << "Parent received: "<< received_str<< std::endl;
+
+        /*do
+        {
             //Make the frame number a cstring and append '\n'
-            strcpy(str_to_write, std::to_string(parent_frame).c_str());
-            strcat(str_to_write,"\n");
+            // strcpy(str_to_write, std::to_string(parent_frame).c_str());
+            // strcat(str_to_write,"\n");
+            toWrite = std::to_string(parent_frame) + "\n"; // Actualizamos el string a escribir.
 
-            write(parent_to_child[1], str_to_write, strlen(str_to_write));
+            write(fd_P2C[STDOUT_FILENO], toWrite.c_str(), toWrite.length()); // Escribimos el string.
             std::cout << "Parent sent: "<< str_to_write <<std::endl;
 
-
             received_str = "";
-            while(read(child_to_parent[0], &reading_buffer, 1) > 0){
-                received_str += reading_buffer;
-            }
+            std::getline(std::cin, received_str); // Leemos el string desde el pipe.
 
             std::cout << "Parent received: "<< received_str<< std::endl;
-        } while (++parent_frame);
+        } while (++parent_frame <= 5);*/
     }
     return 0;
 }
