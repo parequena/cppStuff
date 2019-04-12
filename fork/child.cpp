@@ -3,13 +3,15 @@
 
 int main()
 {
-    int child_frame = 0;
-    char child_buffer[1024];
-    do
-    {
-        std::cin >> child_buffer; // wait for father's messages
-        std::cout << "CHILD received: "<< child_buffer<<" at frame "<< child_frame<<"\n"; //return message to father
-    } while(++child_frame);
+    std::string child_buffer = "";
+    std::cin >> child_buffer; // wait for father's messages
+    std::cout << "CHILD2 received: " << child_buffer << "\n"; //return message to father
+
+    // std::string str = "";
+    // std::getline(std::cin, str);
+
+    // std::cout << "Read: " << str << "\n";z
+    // std::cout << "L:R:0";
 
     return 0;
 }

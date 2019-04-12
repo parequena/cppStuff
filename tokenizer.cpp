@@ -1,3 +1,4 @@
+#include <string>
 #include <sstream>
 #include <iostream>
 #include <vector>
@@ -27,7 +28,6 @@ Shoot
     S:D     : Shoot Down.
 
 */
-enum class Actions { null, MOVE, LOOK, SHOOT };
 enum class Axis { null, X, Y };
 enum class Direction { null, POS, NEG };
 
@@ -38,7 +38,6 @@ protected:
 	std::string numbers = "1234567890";
 
 	int x = 0, y = 0;
-	Actions act;
 	Axis ax;
 	Direction dir;
 
@@ -49,10 +48,9 @@ protected:
 
 	    std::vector<std::string> tokens;
 	    while(std::getline(ss, token, ' '))
-	        tokens.push_back(token);
+			tokens.push_back(token);
 
 	    return tokens;
-	    return {};
 	}
 
 public:
@@ -62,11 +60,26 @@ public:
 	virtual void update() = 0;
 	inline int getX() { return x; }
 	inline int getY() { return y; }
+
+	virtual bool checkSyntax(const std::string& base)
+	{
+		return base.length() >= 3 && base.length() <= 5 && base[1] == ':' && (base.length() < 4 || base[3] == ':');
+	}
 };
 
 struct B : public A
 {
 	B(int _x, int _y): A(_x, _y) {}
+
+	void move(int& dir, int steps)
+	{
+		dir += steps;
+	}
+
+	bool checkSyntax(const std::string& base) override
+	{
+		return A::checkSyntax(base) && (base[0] == 'M' || base[0] == 'm');
+	}
 
 	// Moving.
 	void update() override
@@ -76,12 +89,12 @@ struct B : public A
 		std::getline(std::cin, str);
 		auto v1 = tokenize(str);
 
-		int i = 0, j = 0, f = v1.size(), steps = 0;
-		while(i < f)
+		int action = 0, totalActions = v1.size(), steps = 0;
+		std::string corr = "";
+		while (action < totalActions)
 		{
-			while(v[i].size() >= 2) i++;
+			W
 		}
-		
 	}
 };
 
