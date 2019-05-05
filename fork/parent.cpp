@@ -11,6 +11,7 @@
 
 int main()
 {
+    // Declaramos los FD.
     int fd_P2C[2], fd_C2P[2];
 
     pipe(fd_P2C);
@@ -38,18 +39,17 @@ int main()
         close(fd_P2C[STDIN_FILENO]);  // Cerramos la lectura del pipe de envio.
         close(fd_C2P[STDOUT_FILENO]); // Cerramos la escritura del pipe de recepcion.
 
-        char reading_buffer;
         std::string toWrite = "HOLA HIJO\n";
-
         dup2(fd_C2P[STDIN_FILENO], STDIN_FILENO); // Remplazamos std::cin al pipe de recepcion.
+        dup2(fd_P2C[STDOUT_FILENO], STDOUT_FILENO);
 
-        // dup2(fd_C2P[STDOUT_FILENO], STDOUT_FILENO); // Remplazamos el std::cout por el pipe de envio.
-        write(fd_P2C[STDOUT_FILENO], toWrite.c_str(), toWrite.length()); // Escribimos el string.
-        // std::cout << toWrite;
-        // dup2(STDOUT_FILENO, fd_C2P[STDOUT_FILENO]); // Restauramos el std::cout (?)
+        // write(fd_P2C[STDOUT_FILENO], toWrite.c_str(), toWrite.length()); // Escribimos el string.
+        std::cout << toWrite;
+        dup2(STDOUT_FILENO, fd_P2C[STDOUT_FILENO]); // Restauramos el std::cout (?)
 
         std::getline(std::cin, received_str); // Leemos el string desde el pipe.
 
+        dup2(STDOUT_FILENO, fd_P2C[STDOUT_FILENO]);
         std::cout << "Parent received: "<< received_str<< std::endl;
     }
 

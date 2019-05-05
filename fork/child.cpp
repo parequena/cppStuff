@@ -4,8 +4,9 @@
 int main()
 {
     std::string child_buffer = "";
-    std::cin >> child_buffer; // wait for father's messages
-    std::cout << "CHILD2 received: " << child_buffer << "\n"; //return message to father
+    // std::cin >> child_buffer; // wait for father's messages
+    std::getline(std::cin, child_buffer);
+    std::cout << "CHILD2 received: " << child_buffer << "--\n"; //return message to father
 
     // std::string str = "";
     // std::getline(std::cin, str);
