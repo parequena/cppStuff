@@ -1,4 +1,10 @@
 # Prerequisites
+
+*.out
+*/*.ou
+*/*/*.out
+
+
 *.d
 
 # Compiled Object files
