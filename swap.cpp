@@ -8,3 +8,17 @@ int main()
 	std::cout << "a: " << a << "\tb: " << b << "\n";
 	return 0;
 }
+
+/*
+#include <iostream>
+
+int main()
+{
+	int a = 1, b = 4;
+	std::cout << "a : " << a << "\tb : " << b << "\n";
+	std::swap(a, b);
+	std::cout << "a : " << a << "\tb : " << b << "\n";
+	return 0;
+}
+
+*/
