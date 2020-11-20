@@ -1,0 +1,7 @@
+hay un fichero
+que tiene varias lineas
+
+
+pero no sabemos cuantas
+
+
