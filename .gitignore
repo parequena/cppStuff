@@ -3,7 +3,9 @@
 *.out
 */*.ou
 */*/*.out
-
+*/*/.vscode
+*/*/build/
+*/*/build
 
 *.d
 
