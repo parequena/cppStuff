@@ -1,7 +1,0 @@
-{
-    "files.associations": {
-        "cstdint": "cpp",
-        "typeinfo": "cpp",
-        "iosfwd": "cpp"
-    }
-}
