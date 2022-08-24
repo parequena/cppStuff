@@ -20,11 +20,7 @@ struct GestionedVector
     template <typename... Args>
     constexpr T &add(Args &&... args) noexcept
     {
-        auto const &size{data_.size()};
-        std::cout << "Size: " << size << "\t\t";
-        std::cout << "Last: " << lastValid_ << '\n';
-
-        if (size == lastValid_)
+        if (data_.size() == lastValid_)
         {
             ++lastValid_;
             return data_.emplace_back(std::forward<Args>(args)...);
