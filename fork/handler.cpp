@@ -16,13 +16,21 @@
 #include <vector>    // std::vector
 #include <unistd.h>  // close, fork, execve
 
-int better_main(std::span<std::string> const args)
+static int better_main(std::span<std::string> const args)
 {
-   if(args.size() != 1)
+   if( args.size() == 1 )
    {
-      std::cerr << "ERROR - Try executing: ./handler <binary file>\n";
+      std::cerr << "ERROR - Try executing: ./handler <binary file> <bin file args...>\n";
       return EXIT_FAILURE;
    }
+
+   std::vector<char*> childArgs{};
+   childArgs.reserve(args.size() + 1);
+   for(auto const& arg : args)
+   {
+      childArgs.emplace_back( const_cast<char*>( arg.c_str() ) );
+   }
+   childArgs.emplace_back(nullptr);
 
    // Create pipe to read from code.
    int fd_child_to_parent[2];
@@ -37,26 +45,31 @@ int better_main(std::span<std::string> const args)
 
       // Execute binary file, without arguments.
       auto const binToRead { args[0] };
-      execve(binToRead.c_str(), nullptr, nullptr);
+      execve(binToRead.c_str(), childArgs.data(), nullptr);
 
+      std::cerr << "This error shouldn't be executed!\n";
+      // The code after execve will only be executed if execve fails.
       dup2(STDOUT_FILENO, fd_child_to_parent[STDOUT_FILENO]); // Restore std::cout.
-      close(fd_child_to_parent[STDOUT_FILENO]); // Close writing on pipe.
-
-      return EXIT_SUCCESS;
+      close(fd_child_to_parent[STDOUT_FILENO]); // Close writing pipe.
+      
+      return EXIT_FAILURE;
    }
 
    close(fd_child_to_parent[STDOUT_FILENO]); // Close writing on pipe.
    dup2(fd_child_to_parent[STDIN_FILENO], STDIN_FILENO); // Swap std::cin by pipe.
 
+   std::cout << "Recieved from child:\n----------\n";
    std::string readFromChild{};
-   std::getline(std::cin, readFromChild); // Read from child code.
+   while ( std::getline(std::cin, readFromChild) )
+   {
+      std::cout << readFromChild << '\n';
+   }
+   
+   std::cout << "----------\n";
 
+   
    dup2(STDIN_FILENO, fd_child_to_parent[STDIN_FILENO]); // Restore std::cin.
    close(fd_child_to_parent[STDIN_FILENO]); // Close reading pipe.
-
-   std::cout << "Recieved from child:\n----------\n";
-   std::cout << readFromChild;
-   std::cout << "\n----------\n";
 
    return EXIT_SUCCESS;
 }

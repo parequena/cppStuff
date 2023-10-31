@@ -4,7 +4,23 @@
 */
 #include <iostream>
 
-int main()
-{
-   std::cout << "This is a test from child\n";
+int main(int const argc, char const* const* const argv)
+{     
+   int nTimes{ 1 };
+   if( argc >= 2 )
+   {
+      nTimes = std::atoi(argv[1]);
+   }
+   else if( argc == 1)
+   {
+      std::cerr << "ERROR - Try executing: ./childCode <nTimes to std::cout>\n";
+      return EXIT_FAILURE;
+   }
+
+   for(int i{}; i < nTimes; ++i)
+   {
+      std::cout << i << "\tTest from child code\n";
+   }
+   
+   return EXIT_SUCCESS;
 }
